@@ -17,6 +17,7 @@ generation_config = {
   "max_output_tokens": 2048,
 }
 
+
 def speech(text):
     print(text)
     engine = pyttsx3.init()
@@ -31,7 +32,7 @@ def get_audio():
     while True:
         with sr.Microphone() as source:
             print("Listening...")
-            recognizer.adjust_for_ambient_noise(source, duration=1)
+            recognizer.adjust_for_ambient_noise(source, duration=1.5)
             audio = recognizer.listen(source)
 
         try:
@@ -79,14 +80,14 @@ def process_command(command):
         current_date = datetime.datetime.now().strftime("%Y-%m-%d")
         speech(f"Current date: {current_date}")
 
-    elif "gemini" in command:  # Trigger for Gemini interaction
+    elif "search" in command:
+        speech("Searching on Google")
+        pywhatkit.search(command)
+
+    else: # Trigger for Gemini interaction
         prompt = command.replace("gemini", "").strip()  # Extract user query
         response = model.generate_content(contents=prompt)  # Generate response with Gemini
         speech(response.text)  # Speak the generated response
-
-    else:
-        speech("Searching on Google")
-        pywhatkit.search(command)
 
 
 while True:
