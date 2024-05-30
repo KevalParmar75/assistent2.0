@@ -27,9 +27,16 @@ def speech(text):
     engine.setProperty('voice', voices[1].id)
 
 
+is_listening = True
+
+
 def get_audio():
     recognizer = sr.Recognizer()
     while True:
+         if not is_listening:
+            print("Program paused. Say 'optimus' to resume listening.")
+            return None  # Don't listen while paused
+           
         with sr.Microphone() as source:
             print("Listening...")
             recognizer.adjust_for_ambient_noise(source, duration=1.5)
@@ -37,8 +44,17 @@ def get_audio():
 
         try:
             text = recognizer.recognize_google(audio)
-            print(f"You said: {text}")
-            return text.lower()  # Return the recognized text
+           if text.lower() == "pause":
+                print("Program paused. Say 'optimus' to continue listening.")
+                is_listening = False
+                return None
+            elif text.lower() == "optimus":
+                print("Program resumed. Listening again.")
+                is_listening = True
+                return None  # Don't process "optimus" as a command
+            else:
+                print(f"You said: {text}")
+                return text.lower()
 
         except sr.UnknownValueError:
             print("Could not understand audio.")
